@@ -2,15 +2,25 @@
 import { connectDB } from "./lib/db.js"
 import express from "express";  // ye server lib import krle 
 // import dotenv from "dotenv"  // jo bhi secret use krna hai terko tu 
+import { inngest } from "./lib/inngest.js";
+import { functions } from "./lib/inngest.js";
+import { serve } from "inngest/express"
 import { ENV } from "./lib/env.js";  // env.js file koimport krne ka liye uska objec t 
 import path from "path";   // ye path of ka pass bjta hai  directory 
-import { connect } from "http2";
+import cors from "cors"; // cors is permission system 
 
 
 
 const app = express();    // server apllication crete ho rhi 
 // Route =URL path + server ka response 
-const __dirname = path.resolve();   // it return the current object path  bhai ye return krege tu backend folder ka path mai  han 
+const __dirname = path.resolve();   // it return the current object path  bhai ye return krege tu backend folder ka path mai  han
+
+// middleware 
+app.use(express.json())
+// credentials:true meaning ??=> server allows a browser to in clude cookies on request 
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }))
+
+app.use("/api/inngest", serve({ client: inngest, functions }))
 
 app.get("/health", (req, res) => {
     res.status(200).json({ msg: "api is runnning" });
